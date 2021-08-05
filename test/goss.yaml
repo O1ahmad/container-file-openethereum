@@ -1,0 +1,32 @@
+file:
+  /var/www/demo/index.html:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains:
+      - "Welcome {{.Env.DEMO_USER}}, to infinity and beyond!"
+  /etc/apache2/sites-available/demo.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains:
+      - "ServerName demo.01labs.net"
+  /etc/apache2/sites-enabled/demo.conf:
+    exists: true
+    mode: "0777"
+    owner: root
+    group: root
+    filetype: symlink
+http:
+  http://demo.01labs.net:
+    status: 200
+    body: [ "Welcome {{.Env.DEMO_USER}}, to infinity and beyond!" ]
+    method: GET
+service:
+ apache2:
+   enabled: true
+   running: true
