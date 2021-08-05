@@ -1,7 +1,7 @@
 <p><img src="https://avatars1.githubusercontent.com/u/12563465?s=200&v=4" alt="OCI logo" title="oci" align="left" height="70" /></p>
-<p><img src="https://i.imgur.com/IBNz2CM.jpg" alt="0xO1 logo" title="0xO1" align="right" height="80" /></p>
+<p><img src="https://openethereum.github.io/images/logo-openethereum.svg" alt="OpenEthereum logo" title="open-ethereum" align="right" height="80" /></p>
 
-Container File :zero::one: Demo
+Container File 💻 🔗 Open Ethereum
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-template?color=yellow)
 [![0x0I](https://circleci.com/gh/0x0I/container-file-demo.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-demo)
