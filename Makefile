@@ -1,16 +1,16 @@
 filepath        :=      $(PWD)
 versionfile     :=      $(filepath)/version.txt
 version         :=      $(shell cat $(versionfile))
-image_repo      :=      0labs/demo
+image_repo      :=      0labs/openethereum
 
 build:
-	docker build -t $(image_repo):$(version) .
+	docker build -t $(image_repo):build-$(version) .
 
 test:
-	docker build --target test -t demo:test . && docker run demo:test
+	docker build --target test -t openethereum:test . && docker run openethereum:test
 
 release:
-	docker build --no-cache -t $(image_repo):$(version) .
+	docker build --target release --no-cache -t $(image_repo):$(version) .
 	docker push $(image_repo):$(version)
 
 latest:
