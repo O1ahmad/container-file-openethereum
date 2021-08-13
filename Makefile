@@ -4,17 +4,21 @@ version         :=      $(shell cat $(versionfile))
 image_repo      :=      0labs/openethereum
 
 build:
-	docker build -t $(image_repo):build-$(version) .
+	docker build --build-arg openethereum_version=$(version) -t $(image_repo):build-$(version) .
 
 test:
-	docker build --target test -t openethereum:test . && docker run --env-file test/test.env openethereum:test
+	docker build --build-arg openethereum_version=$(version) --target test -t openethereum:test . && docker run --env-file test/test.env openethereum:test
 
 release:
-	docker build --target release --no-cache -t $(image_repo):$(version) .
+	docker build --build-arg openethereum_version=$(version) --target release --no-cache -t $(image_repo):$(version) .
 	docker push $(image_repo):$(version)
 
 latest:
 	docker tag $(image_repo):$(version) $(image_repo):latest
 	docker push $(image_repo):latest
+
+tools:
+	docker build --build-arg openethereum_version=$(version) --target tools -t $(image_repo):$(version)-tools .
+	docker push ${image_repo}:$(version)-tools
 
 .PHONY: build test release latest

@@ -75,6 +75,26 @@ LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 
 COPY --from=builder /tmp/openethereum/target/release/openethereum /usr/local/bin/
 
-EXPOSE 8545 8546 30303/tcp 30303/udp
+# exposing default ports
+#
+#      secret
+#      store     rpc  ws   listener  discovery
+#      ↓         ↓    ↓    ↓         ↓
+EXPOSE 8082 8083 8545 8546 30303/tcp 30303/udp
 
 CMD ["openethereum"]
+
+# ******* Stage: tools ******* #
+
+FROM builder as build-tools
+
+RUN cd /tmp/openethereum && cargo build -p ethkey-cli -p ethstore-cli --release
+
+# ------- #
+
+FROM base as tools
+
+COPY --from=build-tools /tmp/openethereum/target/release/ethkey /tmp/openethereum/target/release/ethstore \
+  /tmp/openethereum/target/release/openethereum /usr/local/bin/
+
+CMD ["/bin/bash"]
