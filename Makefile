@@ -7,7 +7,7 @@ build:
 	docker build -t $(image_repo):build-$(version) .
 
 test:
-	docker build --target test -t openethereum:test . && docker run openethereum:test
+	docker build --target test -t openethereum:test . && docker run --env-file test/test.env openethereum:test
 
 release:
 	docker build --target release --no-cache -t $(image_repo):$(version) .
