@@ -36,8 +36,16 @@ package:
     installed: true
   zip:
     installed: true
+service:
+  cron:
+    enabled: true
+    running: true
 command:
   openethereum --help:
     exit-status: 0
   openethereum-helper --help:
     exit-status: 0
+  crontab -l:
+    exit-status: 0
+    stdout:
+      - openethereum-helper account backup-keystore

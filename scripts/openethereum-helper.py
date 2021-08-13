@@ -16,6 +16,10 @@ def cli(debug):
     pass
 
 @cli.group()
+def account():
+    pass
+
+@cli.group()
 def config():
     pass
 
@@ -27,10 +31,11 @@ def status():
 # Commands for application configuration customization and inspection
 ###
 
-DEFAULT_OPENETHEREUM_CONFIG_PATH = "/root/.local/share/openethereum/config.toml"
 DEFAULT_OPENETHEREUM_DATADIR = "/root/.local/share/openethereum"
-DEFAULT_OPENETHEREUM_KEYSTORE_DIR = "/root/.local/share/openethereum/keys"
+DEFAULT_OPENETHEREUM_CONFIG_PATH = "{base}/config.toml".format(base=DEFAULT_OPENETHEREUM_DATADIR)
 DEFAULT_OPENETHEREUM_BACKUP_PATH = "/tmp/backups/wallet-backup.zip"
+DEFAULT_OPENETHEREUM_CHAIN = "kovan"
+DEFAULT_OPENETHEREUM_WARP_OFFSET = 100000
 
 DEFAULT_RPC_ADDRESS = "http://localhost:8545"
 DEFAULT_RPC_METHOD = "eth_syncing"
@@ -38,7 +43,7 @@ DEFAULT_RPC_PARAMS = ""
 
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
+    output, error = process.communicate() 
 
     if process.returncode > 0:
         print('Executing command \"%s\" returned a non-zero status code %d' % (command, process.returncode))
@@ -50,6 +55,13 @@ def execute_command(command):
     return output.decode('utf-8')
 
 def execute_jsonrpc(rpc_address, method, params):
+    # prepare inputs for wire transfer
+    for idx, item in enumerate(params):
+        if item == "False" or item == "false":
+            params[idx] = False
+        elif item == "True" or item == "true":
+            params[idx] == True
+
     req = {
         "jsonrpc": "2.0",
         "method": method,
@@ -128,6 +140,35 @@ def check_balances(rpc_addr):
               default=lambda: os.environ.get("RPC_ADDRESS", DEFAULT_RPC_ADDRESS),
               show_default=DEFAULT_RPC_ADDRESS,
               help='server address to query for RPC calls')
+@click.option('--warp-offset',
+              default=lambda: os.environ.get("WARP_OFFSET", DEFAULT_OPENETHEREUM_WARP_OFFSET),
+              show_default=DEFAULT_OPENETHEREUM_WARP_OFFSET,
+              help='starting block behind latest to begin warp/snapshot sync')
+def warp_barrier(rpc_addr, warp_offset):
+    """Get recommended warp barrier to begin warp-sync
+    """
+
+    status = execute_jsonrpc(
+        rpc_addr,
+        "eth_syncing",
+        params=[]).json()['result']
+    if status != False:
+        barrier=(int(status['highestBlock'], 16)- int(warp_offset))
+    else:
+        current_block = execute_jsonrpc(
+            rpc_addr,
+            "eth_getBlockByNumber",
+            params=["latest", False]
+        ).json()['result']['number']
+        barrier=(int(current_block, 16) - int(warp_offset))
+
+    print("Suggested warp barrier is: {block}".format(block=barrier))
+
+@status.command()
+@click.option('--rpc-addr',
+              default=lambda: os.environ.get("RPC_ADDRESS", DEFAULT_RPC_ADDRESS),
+              show_default=DEFAULT_RPC_ADDRESS,
+              help='server address to query for RPC calls')
 def sync_progress(rpc_addr):
     """Check client blockchain sync status and process
     """
@@ -178,6 +219,74 @@ def sync_progress(rpc_addr):
             json.dump(last_sync_data, sync_file)
     else:
         print(json.dumps({ "progress": "synced" }))
+
+@account.command()
+@click.argument('password')
+@click.option('--keystore-dir',
+              default=lambda: os.environ.get("KEYSTORE_DIR", None),
+              show_default="keystore based on specified chain",
+              help='openethereum wallet key store directory to backup')
+@click.option('--chain',
+              default=lambda: os.environ.get("CHAIN", DEFAULT_OPENETHEREUM_CHAIN),
+              show_default=DEFAULT_OPENETHEREUM_CHAIN,
+              help='Ethereum network chain associated with keystore')
+@click.option('--backup-path',
+              default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_OPENETHEREUM_BACKUP_PATH),
+              show_default=DEFAULT_OPENETHEREUM_BACKUP_PATH,
+              help='path to create openethereum wallet key store backup at')
+def backup_keystore(password, keystore_dir, chain, backup_path):
+    """Encrypt and backup wallet keystores.
+
+    PASSWORD password used to encrypt and secure keystore backups
+    """
+
+    subprocess.call(
+        [
+            "cd {keystore} && zip --password {pwd} {backup} *".format(
+                backup=backup_path,
+                keystore=keystore_dir if keystore_dir else "{root}/{netchain}/keys".format(
+                    root=DEFAULT_OPENETHEREUM_DATADIR,
+                    netchain=chain
+                ),
+                pwd=password
+            )
+        ],
+        shell=True)
+
+@account.command()
+@click.argument('password')
+@click.option('--keystore-dir',
+              default=lambda: os.environ.get("KEYSTORE_DIR", None),
+              show_default="keystore based on specified chain",
+              help='openethereum wallet key store directory to backup')
+@click.option('--chain',
+              default=lambda: os.environ.get("CHAIN", DEFAULT_OPENETHEREUM_CHAIN),
+              show_default=DEFAULT_OPENETHEREUM_CHAIN,
+              help='Ethereum network chain associated with keystore')
+@click.option('--backup-path',
+              default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_OPENETHEREUM_BACKUP_PATH),
+              show_default=DEFAULT_OPENETHEREUM_BACKUP_PATH,
+              help='path containing backup of a openethereum wallet key store')
+def import_backup(password, keystore_dir, chain, backup_path):
+    """Decrypt and import wallet keystore backups.
+
+    PASSWORD password used to decrypt and import keystore backups
+    """
+
+    rc = subprocess.call(
+        [
+            "unzip -P {pwd} -d {keystore} {backup}".format(
+                backup=backup_path,
+                keystore=keystore_dir if keystore_dir else "{root}/{netchain}/keys".format(
+                    root=DEFAULT_OPENETHEREUM_DATADIR,
+                    netchain=chain
+                ),
+                pwd=password
+            )
+        ],
+        shell=True)
+    if rc != 0:
+        print("Import of keystore backup [{backup}] failed with exit code: {code}.".format(backup=backup_path, code=rc))
 
 @status.command()
 @click.option('--rpc-addr',
