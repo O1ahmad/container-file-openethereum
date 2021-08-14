@@ -8,6 +8,8 @@ Container File 💻 🔗 OpenEthereum
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/openethereum?style=flat)](https://hub.docker.com/repository/docker/0labs/openethereum)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
+Configure and operate OpenEthereum: a fast and feature-rich multi-network Ethereum client
+
 **Overview**
   - [Setup](#setup)
     - [Build](#build)
