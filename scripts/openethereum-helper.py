@@ -41,6 +41,9 @@ DEFAULT_RPC_ADDRESS = "http://localhost:8545"
 DEFAULT_RPC_METHOD = "eth_syncing"
 DEFAULT_RPC_PARAMS = ""
 
+def print_json(json_blob):
+    print(json.dumps(json_blob, indent=4, sort_keys=True))
+
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate() 
@@ -68,12 +71,20 @@ def execute_jsonrpc(rpc_address, method, params):
         "params": params,
         "id": 1
     }
+    try:
+        result = requests.post(rpc_address, json=req, headers={'Content-Type': 'application/json'})
+    except requests.exceptions.ConnectionError as err:
+        return {
+            "error": "Failed to establish connection to {rpc_addr} - {error}".format(
+                rpc_addr=rpc_address,
+                error=err
+            )
+        }
 
-    result = requests.post(rpc_address, json=req, headers={'Content-Type': 'application/json'})
     if result.status_code == requests.codes.ok:
-        return result
+        return result.json()
     else:
-        result.raise_for_status()
+        raise Exception("Bad Request: {res}".format(res=result))
 
 @config.command()
 @click.option('--config-path',
@@ -129,15 +140,15 @@ def check_balances(rpc_addr):
     accounts = execute_jsonrpc(
         rpc_addr,
         "eth_accounts",
-        params=[]).json()['result']
+        params=[])['result']
     for acct in accounts:
         balance = execute_jsonrpc(
             rpc_addr,
             "eth_getBalance",
-            params=[acct,"latest"]).json()['result']
+            params=[acct,"latest"])['result']
         result.append({ "account": acct, "balance": int(balance, 16) })
 
-    print(json.dumps(result))
+    print_json(result)
 
 @status.command()
 @click.option('--rpc-addr',
@@ -155,7 +166,7 @@ def warp_barrier(rpc_addr, warp_offset):
     status = execute_jsonrpc(
         rpc_addr,
         "eth_syncing",
-        params=[]).json()['result']
+        params=[])['result']
     if status != False:
         barrier=(int(status['highestBlock'], 16)- int(warp_offset))
     else:
@@ -163,7 +174,7 @@ def warp_barrier(rpc_addr, warp_offset):
             rpc_addr,
             "eth_getBlockByNumber",
             params=["latest", False]
-        ).json()['result']['number']
+        )['result']['number']
         barrier=(int(current_block, 16) - int(warp_offset))
 
     print(barrier)
@@ -180,12 +191,12 @@ def sync_progress(rpc_addr):
     status = execute_jsonrpc(
         rpc_addr,
         "eth_syncing",
-        params=[]).json()['result']
+        params=[])['result']
 
     if status != False:
         lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
         date_format_str = '%d/%m/%Y %H:%M:%S.%f'
-        syncPath = '/tmp/geth-sync-progress.json'
+        syncPath = '/tmp/openethereum-sync-progress.json'
         if os.path.isfile(syncPath):
             with open(syncPath, 'r') as sync_file:
                 data = json.load(sync_file)
@@ -211,7 +222,7 @@ def sync_progress(rpc_addr):
             "stateProgress": stateProgress,
             "etaHours": etaHours
         }
-        print(json.dumps(result))
+        print_json(result)
 
         # write out historical data for reference on next invokation
         last_sync_data = {
@@ -222,7 +233,7 @@ def sync_progress(rpc_addr):
         with open(syncPath, 'w') as sync_file:
             json.dump(last_sync_data, sync_file)
     else:
-        print(json.dumps({ "progress": "synced" }))
+        print_json({ "progress": "synced" })
 
 @account.command()
 @click.argument('password')
@@ -313,11 +324,11 @@ def query_rpc(rpc_addr, method, params):
         rpc_addr,
         method,
         params=[] if len(params) == 0 else params.split(',')
-    ).json()
+    )
     if 'error' in result:
-        print(json.dumps(result['error']))
+        print_json(result['error'])
     else:
-        print(json.dumps(result['result']))
+        print_json(result['result'])
 
 if __name__ == "__main__":
     cli()
