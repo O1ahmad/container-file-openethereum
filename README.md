@@ -1,5 +1,5 @@
 <p><img src="https://avatars1.githubusercontent.com/u/12563465?s=200&v=4" alt="OCI logo" title="oci" align="left" height="70" /></p>
-<p><img src="https://openethereum.github.io/images/logo-openethereum.svg" alt="OpenEthereum logo" title="open-ethereum" align="right" height="80" /></p>
+<p><img src="https://openethereum.github.io/images/logo-openethereum.svg" alt="OpenEthereum logo" title="open-ethereum" align="right" height="60" /></p>
 
 Container File 💻 🔗 OpenEthereum
 =========
@@ -118,7 +118,7 @@ docker run 0labs/openethereum:latest --chain ethereum --warp-barrier 100000
 | ------------- | ------------- | ------------- | :-------------: | :-------------: |
 | `3085`    | RPC server | *TCP*  | `rpc : port` | `--jsonrpc-port` |
 | `3086`    | Websocket RPC server | *TCP*  | `websockets : port` | `--ws-port` |
-| `30303`    | protocol peer gossip | *TCP*  | `network : port` | `--port` |
+| `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `network : port` | `--port` |
 | `8082`    | secretstore HTTP API | *TCP*  | `secretstore : http_port` | `--secretstore-http-port` |
 | `8083`    | secretstore internal | *TCP*  | `secretstore : port` | `--secretstore-port` |
 
