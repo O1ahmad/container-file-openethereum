@@ -77,10 +77,10 @@ COPY --from=builder /tmp/openethereum/target/release/openethereum /usr/local/bin
 
 # exposing default ports
 #
-#      secret
-#      store     rpc  ws   listener  discovery
-#      ↓         ↓    ↓    ↓         ↓
-EXPOSE 8082 8083 8545 8546 30303/tcp 30303/udp
+#     secret store
+#     api    internal        rpc  ws   listener  discovery
+#      ↓        ↓            ↓    ↓    ↓         ↓
+EXPOSE 8082    8083          8545 8546 30303/tcp 30303/udp
 
 CMD ["openethereum"]
 
