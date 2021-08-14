@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
+config_dir="${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}"
+config_path="${config_dir}/config.toml"
+
+mkdir -p $config_dir
+
+# customize config based on set "CONFIG_<section>_<setting>" environment variables
+openethereum-helper config customize --config-path $config_path

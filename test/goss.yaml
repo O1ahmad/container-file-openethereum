@@ -1,32 +1,51 @@
+# test resource verification spec
 file:
-  /var/www/demo/index.html:
+  /usr/local/bin/openethereum:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
+  /usr/local/bin/openethereum-helper:
+    exists: true
+    mode: "0775"
+    owner: root
+    group: root
+    filetype: file
+  /root/.local/share/openethereum/config.toml:
     exists: true
     mode: "0644"
     owner: root
     group: root
     filetype: file
     contains:
-      - "Welcome {{.Env.DEMO_USER}}, to infinity and beyond!"
-  /etc/apache2/sites-available/demo.conf:
-    exists: true
-    mode: "0644"
-    owner: root
-    group: root
-    filetype: file
-    contains:
-      - "ServerName demo.01labs.net"
-  /etc/apache2/sites-enabled/demo.conf:
-    exists: true
-    mode: "0777"
-    owner: root
-    group: root
-    filetype: symlink
-http:
-  http://demo.01labs.net:
-    status: 200
-    body: [ "Welcome {{.Env.DEMO_USER}}, to infinity and beyond!" ]
-    method: GET
+      - "[parity]"
+      - "mode ="
+      - "[network]"
+      - "min_peers ="
+      - "[rpc]"
+      - "apis ="
+      - "[snapshots]"
+      - "disable_periodic ="
+package:
+  curl:
+    installed: true
+  cron:
+    installed: true
+  unzip:
+    installed: true
+  zip:
+    installed: true
 service:
- apache2:
-   enabled: true
-   running: true
+  cron:
+    enabled: true
+    running: true
+command:
+  openethereum --help:
+    exit-status: 0
+  openethereum-helper --help:
+    exit-status: 0
+  crontab -l:
+    exit-status: 0
+    stdout:
+      - openethereum-helper account backup-keystore
