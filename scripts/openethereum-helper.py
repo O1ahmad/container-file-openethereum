@@ -57,7 +57,7 @@ def execute_command(command):
 
     return output.decode('utf-8')
 
-def execute_jsonrpc(rpc_address, method, params):
+def execute_jsonrpc(rpc_address, method, params=[]):
     # prepare inputs for wire transfer
     for idx, item in enumerate(params):
         if item == "False" or item == "false":
@@ -139,8 +139,7 @@ def check_balances(rpc_addr):
     result = []
     accounts = execute_jsonrpc(
         rpc_addr,
-        "eth_accounts",
-        params=[])['result']
+        "eth_accounts")['result']
     for acct in accounts:
         balance = execute_jsonrpc(
             rpc_addr,
@@ -165,8 +164,7 @@ def warp_barrier(rpc_addr, warp_offset):
 
     status = execute_jsonrpc(
         rpc_addr,
-        "eth_syncing",
-        params=[])['result']
+        "eth_syncing")['result']
     if status != False:
         barrier=(int(status['highestBlock'], 16)- int(warp_offset))
     else:
@@ -190,8 +188,7 @@ def sync_progress(rpc_addr):
 
     status = execute_jsonrpc(
         rpc_addr,
-        "eth_syncing",
-        params=[])['result']
+        "eth_syncing")['result']
 
     if status != False:
         lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
@@ -212,14 +209,24 @@ def sync_progress(rpc_addr):
         bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
         etas = 0 if bps == 0 else (blocksToGo / bps)
         etaHours = etas / 3600
-        stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
 
+        client_version = execute_jsonrpc(rpc_addr, "web3_clientVersion")['result']
+        client_type = client_version.split('/')[0]
+        if client_type.lower() == "geth" and status['knownStates']:
+            stateUnit = "trie nodes"
+            stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
+        elif client_type.lower() == "openethereum" and status['warpChunksAmount']:
+            stateUnit = "warp chunks"
+            stateProgress = 0 if int(status['warpChunksAmount'], 16) == 0 else (int(status['warpChunksProcessed'], 16) / int(status['warpChunksAmount'], 16)) * 100
+        else:
+            # unknown client type - default to N/A
+            stateProgress = None
         result = {
             "progress": percentage,
             "blocksToGo": blocksToGo,
             "bps": bps,
             "percentageIncrease": percentagePerTime,
-            "stateProgress": stateProgress,
+            "stateProgress": "N/A" if stateProgress == None else "{progress}% of total sync {unit}".format(progress=stateProgress, unit=stateUnit),
             "etaHours": etaHours
         }
         print_json(result)
