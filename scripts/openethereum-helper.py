@@ -60,9 +60,9 @@ def execute_command(command):
 def execute_jsonrpc(rpc_address, method, params=[]):
     # prepare inputs for wire transfer
     for idx, item in enumerate(params):
-        if item == "False" or item == "false":
+        if item.lower() == "false":
             params[idx] = False
-        elif item == "True" or item == "true":
+        elif item.lower() == "true":
             params[idx] == True
 
     req = {
