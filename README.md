@@ -116,7 +116,7 @@ docker run 0labs/openethereum:latest --chain ethereum --warp-barrier 100000
 
 ###### port mappings
 
-| Port  | mapping description | type | config setting ([section]:[property]) | command-line flag |
+| Port  | mapping description | type | config setting ([section]:property) | command-line flag |
 | ------------- | ------------- | ------------- | :-------------: | :-------------: |
 | `3085`    | RPC server | *TCP*  | `rpc : port` | `--jsonrpc-port` |
 | `3086`    | Websocket RPC server | *TCP*  | `websockets : port` | `--ws-port` |
@@ -383,7 +383,7 @@ docker run --env CONFIG-network-warp=true \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-docker run --name 01-openethereum --detach --env CONFIG-footprint-pruning=fast 0labs/openethereum:latest openethereum
+docker run --name 01-openethereum --detach --env CONFIG-footprint-pruning=fast 0labs/openethereum:latest
 
 docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
             --volume ~/openethereum/data:/root/.local/share/openethereum \
@@ -391,7 +391,7 @@ docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
             --env BACKUP_PATH=/tmp/keys/my-wallets.zip
             01-openethereum openethereum-helper account import-backup
 
-docker exec --volume ~/openethereum:/root/.local/share/openethereum 01-openethereum account import /root/.local/share/openethereum/keys/a-wallet
+docker exec --volume ~/openethereum/data:/root/.local/share/openethereum 01-openethereum account import /root/.local/share/openethereum/keys/a-wallet
 ```
 
 License
