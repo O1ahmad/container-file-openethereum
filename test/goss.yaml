@@ -24,6 +24,7 @@ file:
       - "[network]"
       - "min_peers ="
       - "[rpc]"
+      - "disable = false"
       - "apis ="
       - "[snapshots]"
       - "disable_periodic ="
