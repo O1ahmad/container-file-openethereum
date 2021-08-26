@@ -114,6 +114,8 @@ _Moreover, see [here](https://openethereum.github.io/Configuring-OpenEthereum#cl
 docker run 0labs/openethereum:latest --chain ethereum --warp-barrier 100000
 ```
 
+_...and reference below for network/chain identification and communication configs:_
+
 ###### port mappings
 
 | Port  | mapping description | type | config setting ([section]:property) | command-line flag |
@@ -123,6 +125,18 @@ docker run 0labs/openethereum:latest --chain ethereum --warp-barrier 100000
 | `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `network : port` | `--port` |
 | `8082`    | secretstore HTTP API | *TCP*  | `secretstore : http_port` | `--secretstore-http-port` |
 | `8083`    | secretstore internal | *TCP*  | `secretstore : port` | `--secretstore-port` |
+
+###### chain id mappings
+
+| name | config setting (network : id) | command-line flag (--chain) |
+| :---: | :---: | :---: |
+| Mainnet | 1 | `ethereum` |
+| Goerli | 5 | `goerli` |
+| Kovan | 42 | `kovan` |
+| Rinkeby | 4 | `rinkeby` |
+| Ropsten | 3 | `ropsten` |
+
+see [chainlist.org](https://chainlist.org/) for a complete list
 
 #### Operations
 
