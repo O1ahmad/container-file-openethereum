@@ -35,7 +35,7 @@ Guidelines on running `0labs/openethereum` containers are available and organize
 | `builder` | image state following build of openethereum binary/artifacts |
 | `test` | image containing test tools, functional test cases for validation in addition to `release` target contents |
 | `release` | minimal resultant image containing service binaries, entrypoints and helper scripts |
-| `tool` | setup consisting of all openethereum utilities, helper tooling in addition `release` target contents |
+| `tool` | setup consisting of all openethereum utilities, helper tooling in addition to `release` target contents |
 
 ```bash
 docker build --target <target> -t <tag> .
@@ -224,7 +224,7 @@ $ docker exec 0labs/openethereum:latest openethereum-helper status sync-progress
 
 ##### Backup and encrypt keystore
 
-Encrypt and backup client keystore to designated container/host location.
+Encrypt and backup client keystore to designated container(/host) location.
 
 ```
 $ openethereum-helper account backup-keystore --help
@@ -259,7 +259,7 @@ Options:
 `$AUTO_BACKUP_KEYSTORE=<boolean>` (**default**: `false`)
 - automatically backup keystore to $BACKUP_PATH location every $BACKUP_INTERVAL seconds
 
-`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `* * * * * (hourly)`)
+`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `0 * * * * (hourly)`)
 - keystore backup frequency based on cron schedules
 
 `$BACKUP_PASSWORD=<string>` (**required**)
@@ -267,7 +267,7 @@ Options:
 
 ##### Import backup
 
-Decrypt and import backed-up keystore to designated container/host keystore location.
+Decrypt and import backed-up keystore to designated container keystore location.
 
 ```
 $ openethereum-helper account import-backup --help
@@ -310,7 +310,7 @@ Usage: openethereum-helper status warp-barrier [OPTIONS]
   Get recommended warp barrier to begin warp-sync
 
 Options:
-  --rpc-addr TEXT     server address to query for RPC calls  [default:
+  --rpc-addr TEXT     in sync server address to query for RPC calls  [default:
                       (http://localhost:8545)]
   --warp-offset TEXT  starting block behind latest to begin warp/snapshot sync
                       [default: dynamic]
@@ -318,7 +318,7 @@ Options:
 ```
 
 `$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
-- `openethereum` RPC server address for querying network state
+- `openethereum` network synced RPC server address for querying network state
 
 `$WARP_OFFSET=<integer>` (**default**: `10000`)
 - starting block behind latest to begin warp/snapshot sync
@@ -351,7 +351,7 @@ Options:
 - `openethereum` RPC method to execute
 
 `$RPC_PARAMS=<rpc-method-params>` (**default**: `''`)
-- `openethereum` RPC method parameters to include within call
+- `openethereum` comma-separated list of RPC method parameters to include within call
 
 The output consists of a JSON blob corresponding to the expected return object for a given RPC method. Reference [Ethereum's RPC API wiki](https://eth.wiki/json-rpc/API) for more details.
 
