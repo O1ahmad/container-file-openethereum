@@ -6,22 +6,22 @@ networks:
 
 services:
   openethereum:
-    image: ${openethereum_image:-0labs/openethereum:latest}
+    image: ${image:-0labs/openethereum:latest}
     container_name: openethereum
     command:
       - "openethereum"
       - "--chain=${chain:-kovan}"
       - "--warp-barrier=${warp_barrier:-10000}"
-      - "--config=${OPENETHEREUM_CONFIG_DIR:-~/.local/share/openethereum}/config.toml"
+      - "--config=${CONFIGDIR:-~/.local/share/openethereum}/config.toml"
     env_file:
       - ${env_vars:-.env}
     ports:
-      - ${openethereum_p2p_port:-30303}:30303/tcp
-      - ${openethereum_rpc_port:-8545}:8545
-      - ${openethereum_websocket_port:-8546}:8546
-      - ${openetherem_metrics_port:-3000}:3000
+      - ${p2p_port:-30303}:30303/tcp
+      - ${rpc_port:-8545}:8545
+      - ${websocket_port:-8546}:8546
+      - ${metrics_port:-3000}:3000
     volumes:
-      - "${host_data_dir:-/operations/ethereum/openethereum/data}:${openethereum_data_dir:-/root/.local/share/openethereum}/config.toml"
+      - "${host_data_dir:-/operations/ethereum/openethereum/data}:${data_dir:-/root/.local/share/openethereum}/config.toml"
     networks:
       - ethereum
       - monitoring
