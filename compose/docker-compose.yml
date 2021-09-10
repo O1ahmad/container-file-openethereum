@@ -12,7 +12,9 @@ services:
       - "openethereum"
       - "--chain=${chain:-kovan}"
       - "--warp-barrier=${warp_barrier:-10000}"
-      - "--config=${CONFIGDIR:-~/.local/share/openethereum}/config.toml"
+      - "--config=${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}/config.toml"
+    environment:
+      OPENETHEREUM_CONFIG_DIR: ${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}
     env_file:
       - ${env_vars:-.env}
     ports:
