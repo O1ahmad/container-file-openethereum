@@ -23,7 +23,7 @@ services:
       - ${websocket_port:-8546}:8546
       - ${metrics_port:-3000}:3000
     volumes:
-      - "${host_data_dir:-/operations/ethereum/openethereum/data}:${data_dir:-/root/.local/share/openethereum}/config.toml"
+      - "${host_data_dir:-/operations/ethereum/openethereum/data}:${data_dir:-/root/.local/share/openethereum}"
     networks:
       - ethereum
       - monitoring
