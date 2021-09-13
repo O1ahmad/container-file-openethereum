@@ -1,0 +1,42 @@
+version: "3"
+
+networks:
+  ethereum:
+  monitoring:
+
+services:
+  openethereum:
+    image: ${image:-0labs/openethereum:latest}
+    container_name: openethereum
+    command:
+      - "openethereum"
+      - "--chain=${chain:-kovan}"
+      - "--warp-barrier=${warp_barrier:-10000}"
+      - "--config=${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}/config.toml"
+    environment:
+      OPENETHEREUM_CONFIG_DIR: ${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}
+    env_file:
+      - ${env_vars:-.env}
+    ports:
+      - ${p2p_port:-30303}:30303/tcp
+      - ${rpc_port:-8545}:8545
+      - ${websocket_port:-8546}:8546
+      - ${metrics_port:-3000}:3000
+    volumes:
+      - "${host_data_dir:-/operations/ethereum/openethereum/data}:${data_dir:-/root/.local/share/openethereum}"
+    networks:
+      - ethereum
+      - monitoring
+    restart: ${restart_policy:-unless-stopped}
+
+  openeth-exporter:
+    image: ${exporter_image:-hunterlong/gethexporter:latest}
+    container_name: geth-exporter
+    environment:
+      GETH: "${exporter_rpc_addr:-http://openethereum:8545}"
+    ports:
+      - ${exporter_port:-10090}:9090
+    networks:
+      - ethereum
+      - monitoring
+    restart: ${restart_policy:-unless-stopped}

@@ -8,8 +8,12 @@ jobs:
               name: docker build complete image
               command: make build
          - run:
-              name: docker build and --target test
+              name: docker build and test image base
               command: make test
+
+         - run:
+              name: test docker-compose definition
+              command: make test-compose
 
          - run:
               name: login to Dockerhub for release
