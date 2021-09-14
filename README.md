@@ -119,9 +119,10 @@ _...and reference below for network/chain identification and communication confi
 ###### port mappings
 
 | Port  | mapping description | type | config setting ([section]:property) | command-line flag |
-| ------------- | ------------- | ------------- | :-------------: | :-------------: |
+| :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
 | `3085`    | RPC server | *TCP*  | `rpc : port` | `--jsonrpc-port` |
 | `3086`    | Websocket RPC server | *TCP*  | `websockets : port` | `--ws-port` |
+| `3000`    | Metrics collection | *TCP*  | `metrics : port` | `--metrics-port` |
 | `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `network : port` | `--port` |
 | `8082`    | secretstore HTTP API | *TCP*  | `secretstore : http_port` | `--secretstore-http-port` |
 | `8083`    | secretstore internal | *TCP*  | `secretstore : port` | `--secretstore-port` |
@@ -397,15 +398,14 @@ docker run --env CONFIG-network-warp=true \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-docker run --name 01-openethereum --detach --env CONFIG-footprint-pruning=fast 0labs/openethereum:latest
-
-docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
+docker run --name 01-openethereum --detach --volume /path/to/usb/mount/keys:/tmp/keys \
             --volume ~/openethereum/data:/root/.local/share/openethereum \
-            --env BACKUP_PASSWORD=<secret>
-            --env BACKUP_PATH=/tmp/keys/my-wallets.zip
+            --env CONFIG-footprint-pruning=fast 0labs/openethereum:latest
+
+docker exec --env BACKUP_PASSWORD=<secret> --env BACKUP_PATH=/tmp/keys/my-wallets.zip
             01-openethereum openethereum-helper account import-backup
 
-docker exec --volume ~/openethereum/data:/root/.local/share/openethereum 01-openethereum account import /root/.local/share/openethereum/keys/a-wallet
+docker exec 01-openethereum account import /root/.local/share/openethereum/keys/a-wallet
 ```
 
 License
