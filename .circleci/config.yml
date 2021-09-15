@@ -2,6 +2,7 @@ version: 2.1
 jobs:
    build:
       machine: true
+      parallelism: 4
       steps:
          - checkout
          - run:
