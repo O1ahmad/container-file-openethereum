@@ -2,7 +2,6 @@ version: "3"
 
 networks:
   ethereum:
-  monitoring:
 
 services:
   openethereum:
@@ -20,13 +19,12 @@ services:
     ports:
       - ${p2p_port:-30303}:30303/tcp
       - ${rpc_port:-8545}:8545
-      - ${websocket_port:-8546}:8546
+      - ${ws_port:-8546}:8546
       - ${metrics_port:-3000}:3000
     volumes:
       - "${host_data_dir:-/var/tmp/openethereum}:${data_dir:-/root/.local/share/openethereum}"
     networks:
       - ethereum
-      - monitoring
     restart: ${restart_policy:-unless-stopped}
 
   openeth-exporter:
@@ -38,5 +36,4 @@ services:
       - ${exporter_port:-10090}:9090
     networks:
       - ethereum
-      - monitoring
     restart: ${restart_policy:-unless-stopped}
