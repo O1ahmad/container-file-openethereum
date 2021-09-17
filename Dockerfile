@@ -14,8 +14,8 @@ RUN apt update && apt install --yes --no-install-recommends \
   libudev-dev
 
 WORKDIR /tmp
-RUN git clone https://github.com/openethereum/openethereum
-RUN cd openethereum && git checkout ${openethereum_version} && cargo build --release --features final --verbose
+RUN git clone  --depth 1 --branch ${openethereum_version} https://github.com/openethereum/openethereum
+RUN cd openethereum && cargo build --release --features final --verbose
 
 WORKDIR /tmp/openethereum
 
