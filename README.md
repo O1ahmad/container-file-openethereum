@@ -91,7 +91,7 @@ chain = "ethereum"
 unlock = ["0xdeadbeefcafe0000000000000000000000000000"]
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/openethereum:latest --config /tmp/config.toml
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/openethereum:latest openethereum --config /tmp/config.toml
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -104,14 +104,14 @@ min_peers = 50
 # mount custom config into container
 $ docker run -it --env OPENETHEREUM_CONFIG_DIR=/tmp/openethereum --env CONFIG-parity-max_peers=100 \
   --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/openethereum/config.toml \
-  0labs/openethereum:latest --config /tmp/openethereum/config.toml
+  0labs/openethereum:latest openethereum --config /tmp/openethereum/config.toml
 ```
 
 _Moreover, see [here](https://openethereum.github.io/Configuring-OpenEthereum#cli-options) for a list of supported flags to set as runtime command-line flags._
 
 ```bash
 # connect to Ethereum mainnet and enable warp sync with set barrier
-docker run 0labs/openethereum:latest --chain ethereum --warp-barrier 100000
+docker run 0labs/openethereum:latest openethereum --chain ethereum --warp-barrier 100000
 ```
 
 _...and reference below for network/chain identification and communication configs:_
@@ -141,7 +141,7 @@ see [chainlist.org](https://chainlist.org/) for a complete list
 
 #### Operations
 
-:flashlight: To assist with managing an `openethereum` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
+:flashlight: To assist with managing an `openethereum` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image. *Note:* all tool command-line flags can alternatively be expressed as container runtime environment variables, as described below.
 
 ##### Check account balances
 
