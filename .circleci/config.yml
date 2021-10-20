@@ -26,3 +26,12 @@ jobs:
          - run:
               name: build and push tools image version to Dockerhub
               command: make tools
+
+         - run:
+              name: sync Dockerhub README
+              command: >-
+                docker run --rm -v $(pwd)/README.md:/data/README.md
+                -e DOCKERHUB_USR=$DOCKER_LOGIN
+                -e DOCKERHUB_PWD=$DOCKER_PWD
+                -e DOCKERHUB_ORG=0labs
+                -e DOCKERHUB_REPO=openethereum gofunky/readmyhub:stable
