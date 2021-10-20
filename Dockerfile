@@ -1,12 +1,13 @@
 ARG build_version="rust:1.51-slim-buster"
 ARG build_type="source"
+ARG openethereum_version=v3.2.6
 
 # ******* Stage: builder ******* #
 FROM ${build_version} as builder-source
 
 ENV RUST_BACKTRACE 1
 
-ARG openethereum_version=v3.2.6
+ARG openethereum_version
 
 RUN apt update && apt install --yes --no-install-recommends \
   git \
@@ -24,13 +25,15 @@ WORKDIR /tmp/openethereum
 # ----- Stage: package install -----
 FROM ubuntu:21.04 as builder-package
 
-ARG openethereum_version=v3.2.6
+ARG openethereum_version
 
-RUN apt update && apt install --yes --no-install-recommends curl ca-certificates
+RUN apt update && apt install --yes --no-install-recommends curl ca-certificates unzip
 
 RUN mkdir /tmp/bin && \
   curl -L https://github.com/openethereum/openethereum/releases/download/${openethereum_version}/openethereum-linux-${openethereum_version}.zip -o download.zip \
   && unzip download.zip -d /tmp/bin
+
+RUN chmod 755 /tmp/bin/openethereum
 
 FROM builder-${build_type} as build-condition
 
@@ -101,7 +104,20 @@ CMD ["openethereum"]
 
 # ******* Stage: tools ******* #
 
-FROM builder as build-tools
+FROM ${build_version} as build-tools
+
+ENV RUST_BACKTRACE 1
+
+ARG openethereum_version
+
+RUN apt update && apt install --yes --no-install-recommends \
+  git \
+  build-essential \
+  cmake \
+  libudev-dev
+
+WORKDIR /tmp
+RUN git clone  --depth 1 --branch ${openethereum_version} https://github.com/openethereum/openethereum
 
 RUN cd /tmp/openethereum && cargo build -p ethkey-cli -p ethstore-cli --release
 

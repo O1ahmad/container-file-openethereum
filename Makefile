@@ -5,7 +5,7 @@ image_repo      :=      0labs/openethereum
 build_type      ?=      package
 
 build:
-	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):build-$(version) --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):build-$(version) --target build-condition --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 
 test:
 	DOCKER_BUILDKIT=1 docker build --tag openethereum:test --target test --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) . && docker run --env-file test/test.env openethereum:test
@@ -24,7 +24,7 @@ latest:
 	docker push $(image_repo):latest
 
 tools:
-	DOCKER_BUILDKITE=1 docker build --tag $(image_repo):$(version)-tools --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) --target tools .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):$(version)-tools --target tools --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 	docker push ${image_repo}:$(version)-tools
 
-.PHONY: build test release latest
+.PHONY: build test release tools latest
