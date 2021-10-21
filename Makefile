@@ -2,12 +2,13 @@ filepath        :=      $(PWD)
 versionfile     :=      $(filepath)/version.txt
 version         :=      $(shell cat $(versionfile))
 image_repo      :=      0labs/openethereum
+build_type      ?=      package
 
 build:
-	docker build --build-arg openethereum_version=$(version) --tag $(image_repo):build-$(version) .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):build-$(version) --target build-condition --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 
 test:
-	docker build --build-arg openethereum_version=$(version) --target test --tag openethereum:test . && docker run --env-file test/test.env openethereum:test
+	DOCKER_BUILDKIT=1 docker build --tag openethereum:test --target test --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) . && docker run --env-file test/test.env openethereum:test
 
 test-compose:
 	cd compose && docker-compose config && docker-compose up -d && \
@@ -15,7 +16,7 @@ test-compose:
 	docker-compose down
 
 release:
-	docker build --build-arg openethereum_version=$(version) --target release --tag $(image_repo):$(version) .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):$(version) --target release --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 	docker push $(image_repo):$(version)
 
 latest:
@@ -23,7 +24,7 @@ latest:
 	docker push $(image_repo):latest
 
 tools:
-	docker build --build-arg openethereum_version=$(version) --target tools --tag $(image_repo):$(version)-tools .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):$(version)-tools --target tools --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 	docker push ${image_repo}:$(version)-tools
 
-.PHONY: build test release latest
+.PHONY: build test release tools latest

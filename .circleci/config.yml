@@ -1,15 +1,21 @@
 version: 2.1
 jobs:
    build:
-      machine: true
+      machine:
+          enabled: true
+          image: ubuntu-2004:202107-02
+      environment:
+         DOCKER_BUILDKIT: 1
+         COMPOSE_DOCKER_CLI_BUILD: 1
       steps:
          - checkout
          - run:
               name: docker build complete image
-              command: make build
+              command: build_type=package make build
+
          - run:
-              name: docker build and test image base
-              command: make test
+              name: docker build and --target test
+              command: build_type=package make test
 
          - run:
               name: test docker-compose definition
@@ -21,11 +27,11 @@ jobs:
 
          - run:
               name: push image version to Dockerhub
-              command: make release
+              command: build_type=package make release
 
          - run:
               name: build and push tools image version to Dockerhub
-              command: make tools
+              command: build_type=package make tools
 
          - run:
               name: sync Dockerhub README
