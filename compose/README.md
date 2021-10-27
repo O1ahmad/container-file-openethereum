@@ -21,18 +21,18 @@ or included within an environment config file located either at a `.env` file wi
 | --- | :---: | :---: |
 | *image* | OpenEthereum service container image to deploy | `0labs/openethereum:latest` |
 | *chain* | Ethereum network/chain to connect openethereum instance to | `kovan` |
-| *OPENETHEREUM_CONFIG_DIR* | configuration directory path within container | `/etc/geth` |
+| *OPENETHEREUM_CONFIG_DIR* | configuration directory path within container | `/etc/openethereum` |
 | *p2p_port* | Peer-to-peer network discovery and communication listening port | `30303` |
 | *rpc_port* | HTTP-RPC server listening portport | `8545` |
 | *websocket_port* | WS-RPC server listening port | `8546` |
 | *metrics_port* | Metrics HTTP server listening port | `3000` |
-| *env_vars* | Path to environment file to load by compose Geth container | `.env` |
-| *host_data_dir* | Host directory to store client runtime/operational data | `/var/tmp/geth` |
+| *env_vars* | Path to environment file to load by compose OpenEthereum container | `.env` |
+| *host_data_dir* | Host directory to store client runtime/operational data | `/var/tmp/openethereum` |
 | *data_dir* | data directory within container to store client runtime/operational data | `/var/tmp/openethereum` |
 | *restart_policy* | container restart policy | `unless-stopped` |
 | *warp_barrier* | When warp enabled never attempt regular sync before warping to block NUM | `10000` |
 | *exporter_image* | OpenEthereum data exporter image to deploy | `hunterlong/gethexporter:latest` |
-| *exporter_rpc_addr* | Network address <ip:port> of geth rpc instance to export data from | `http://localhost:8545` |
+| *exporter_rpc_addr* | Network address `ip:port` of OpenEthereum rpc instance to export data from | `http://localhost:8545` |
 | *exporter_port* | Exporter metrics collection listening port | `10090` |
 
 ## Deploy examples
