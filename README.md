@@ -28,6 +28,20 @@ Guidelines on running `0labs/openethereum` containers are available and organize
 
 #### Build
 
+##### args
+
+| Name  | description |
+| ------------- | ------------- |
+| `build_version` | base image to utilize for building application binaries/artifacts |
+| `build_type` | type of application build process (i.e. build from *source* or *package*) |
+| `openethereum_version` | `openethereum` application version to build within image |
+| `goss_version` | `goss` testing tool version to install within image test target |
+| `version` | container/image infra application version |
+
+```bash
+docker build --build-arg <arg>=<value> -t <tag> .
+```
+
 ##### targets
 
 | Name  | description |
