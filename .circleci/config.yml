@@ -13,12 +13,8 @@ jobs:
               command: build_type=package make build
 
          - run:
-              name: docker build and --target test
+              name: test docker image
               command: build_type=package make test
-
-         - run:
-              name: test docker-compose definition
-              command: make test-compose
 
          - run:
               name: login to Dockerhub for release
@@ -27,6 +23,10 @@ jobs:
          - run:
               name: push image version to Dockerhub
               command: build_type=package make release
+
+         - run:
+              name: test docker-compose definition
+              command: make test-compose
 
          - run:
               name: build and push tools image version to Dockerhub
