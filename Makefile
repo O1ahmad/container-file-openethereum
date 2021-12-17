@@ -5,7 +5,7 @@ image_repo      :=      0labs/openethereum
 build_type      ?=      package
 
 build:
-	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):build-$(version) --target build-condition --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
+	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):$(version) --target build-condition --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
 
 test:
 	DOCKER_BUILDKIT=1 docker build --tag openethereum:test --target test --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) . && docker run --env-file test/test.env openethereum:test
