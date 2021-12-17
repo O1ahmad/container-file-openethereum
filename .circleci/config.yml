@@ -2,8 +2,7 @@ version: 2.1
 jobs:
    build:
       machine:
-          enabled: true
-          image: ubuntu-2004:202107-02
+          image: ubuntu-2004:202111-01
       environment:
          DOCKER_BUILDKIT: 1
          COMPOSE_DOCKER_CLI_BUILD: 1

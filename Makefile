@@ -11,9 +11,10 @@ test:
 	DOCKER_BUILDKIT=1 docker build --tag openethereum:test --target test --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) . && docker run --env-file test/test.env openethereum:test
 
 test-compose:
-	cd compose && docker-compose config && docker-compose up -d && \
+	echo "image=${image_repo}:${version}" > compose/.env-test
+	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d && \
 	sleep 5 && docker-compose logs 2>&1 | grep "Configured for Kovan Testnet" && docker-compose logs 2>&1 | grep "Listening for new connections" && \
-	docker-compose down
+	docker-compose down && rm .env-test
 
 release:
 	DOCKER_BUILDKIT=1 docker build --tag $(image_repo):$(version) --target release --build-arg build_type=$(build_type) --build-arg openethereum_version=$(version) .
