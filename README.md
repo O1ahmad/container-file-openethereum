@@ -134,8 +134,8 @@ _...and reference below for network/chain identification and communication confi
 
 | Port  | mapping description | type | config setting ([section]:property) | command-line flag |
 | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
-| `3085`    | RPC server | *TCP*  | `rpc : port` | `--jsonrpc-port` |
-| `3086`    | Websocket RPC server | *TCP*  | `websockets : port` | `--ws-port` |
+| `8545`    | RPC server | *TCP*  | `rpc : port` | `--jsonrpc-port` |
+| `8546`    | Websocket RPC server | *TCP*  | `websockets : port` | `--ws-port` |
 | `3000`    | Metrics collection | *TCP*  | `metrics : port` | `--metrics-port` |
 | `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `network : port` | `--port` |
 | `8082`    | secretstore HTTP API | *TCP*  | `secretstore : http_port` | `--secretstore-http-port` |
