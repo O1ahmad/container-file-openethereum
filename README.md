@@ -128,6 +128,13 @@ _Moreover, see [here](https://openethereum.github.io/Configuring-OpenEthereum#cl
 docker run 0labs/openethereum:latest openethereum --chain ethereum --warp-barrier 100000
 ```
 
+`$EXTRA_ARGS=<string>` (**default**: `''`)
+- space separated list of command-line flags to pass at run-time
+
+  ```bash
+  docker run --env EXTRA_ARGS="--chain=goerli --metrics --enable-snapshotting" 0labs/openethereum:latest
+  ```
+
 _...and reference below for network/chain identification and communication configs:_
 
 ###### port mappings
