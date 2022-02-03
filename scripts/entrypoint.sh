@@ -1,17 +1,22 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 # Print all commands executed if DEBUG mode enabled
 [ -n "${DEBUG:-""}" ] && set -x
 
-DIR=/docker-entrypoint.d
 
+DIR=/docker-entrypoint.d
 if [[ -d "$DIR" ]] ; then
+  echo "Executing entrypoint scripts in $DIR"
   /bin/run-parts --exit-on-error "$DIR"
 fi
 
-if [[ -n "${EXTRA_ARGS:-""}" ]]; then
-  exec /usr/bin/tini -g -- $@ ${EXTRA_ARGS}
+conf="${OPENETHEREUM_CONFIG_DIR:-/etc/openethereum}/config.yml"
+if [[ -z "${NOLOAD_CONFIG}" && -f "${conf}" ]]; then
+  echo "Loading config at ${conf}..."
+  run_args="--config=${conf} ${EXTRA_ARGS:-}"
 else
-  exec /usr/bin/tini -g -- "$@"
+  run_args=${EXTRA_ARGS:-""}
 fi
+
+exec /usr/bin/tini -g -- $@ ${run_args}

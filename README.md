@@ -105,7 +105,7 @@ chain = "ethereum"
 unlock = ["0xdeadbeefcafe0000000000000000000000000000"]
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/openethereum:latest openethereum --config /tmp/config.toml
+$ docker run --env OPENETHEREUM_CONFIG_DIR=/tmp/openethereum --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/openethereum/config.toml 0labs/openethereum:latest
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -118,7 +118,7 @@ min_peers = 50
 # mount custom config into container
 $ docker run -it --env OPENETHEREUM_CONFIG_DIR=/tmp/openethereum --env CONFIG-parity-max_peers=100 \
   --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/openethereum/config.toml \
-  0labs/openethereum:latest openethereum --config /tmp/openethereum/config.toml
+  0labs/openethereum:latest
 ```
 
 _Moreover, see [here](https://openethereum.github.io/Configuring-OpenEthereum#cli-options) for a list of supported flags to set as runtime command-line flags._
@@ -389,32 +389,33 @@ docker exec --env RPC_ADDRESS=openethereum-rpc.live.01labs.net --env RPC_METHOD=
 Examples
 ----------------
 
-* Create account and bind data/keystore directory to host path:
+* Create account and bind data/keystore directory to host path (**note:** disable automatic load of config during entrypoint execution):
 ```
-docker run -it -v /mnt/openethereum/data:/root/.local/share/openethereum 0labs/openethereum:latest openethereum account new
+docker run -it --env NOLOAD_CONFIG=1 -v /mnt/openethereum/data:/root/.local/share/openethereum 0labs/openethereum:latest openethereum account new
 ```
 
 * Launch an Ethereum archive node and connect it to the Goerli PoS (Proof of Stake) test network:
 ```
-docker run --env CONFIG-footprint-pruning=archive 0labs/openethereum:latest openethereum --chain goerli
+docker run --env CONFIG-footprint-pruning=archive --env EXTRA_ARGS="--chain goerli" 0labs/openethereum:latest
 ```
 
 * View sync progress of active local full-node:
 ```
-docker run --name 01-openethereum --detach 0labs/openethereum:latest openethereum --chain ethereum
+docker run --name 01-openethereum --detach --env EXTRA_ARGS="--chain ethereum" 0labs/openethereum:latest
 
 docker exec 01-openethereum openethereum-helper status sync-progress
 ```
 
 * Run *warp* sync with automatic daily backups of custom keystore directory:
 ```
-barrier=$(docker run 0labs/openethereum:latest openethereum-helper status warp-barrier --rpc-addr <RPC-node> --warp-offset 10000)
+barrier=$(docker run --env NOLOAD_CONFIG=1 0labs/openethereum:latest openethereum-helper status warp-barrier --rpc-addr <RPC-node> --warp-offset 10000)
 
 docker run --env CONFIG-network-warp=true \
            --env KEYSTORE_DIR=/tmp/keys \
            --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
            --env BACKUP_PASSWORD=<secret> \
-           --volume ~/openethereum/keys:/tmp/keys 0labs/openethereum:latest openethereum --warp-barrier $barrier
+           --env EXTRA_ARGS="--warp-barrier $barrier"
+           --volume ~/openethereum/keys:/tmp/keys 0labs/openethereum:latest
 ```
 
 * Import account from keystore backup stored on an attached USB drive:

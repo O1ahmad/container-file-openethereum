@@ -3,7 +3,7 @@
 # Print all commands executed if DEBUG mode enabled
 [ -n "${DEBUG:-""}" ] && set -x
 
-config_dir="${OPENETHEREUM_CONFIG_DIR:-/root/.local/share/openethereum}"
+config_dir="${OPENETHEREUM_CONFIG_DIR:-/etc/openethereum}"
 config_path="${config_dir}/config.toml"
 
 mkdir -p $config_dir

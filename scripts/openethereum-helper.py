@@ -32,7 +32,7 @@ def status():
 ###
 
 DEFAULT_OPENETHEREUM_DATADIR = "/root/.local/share/openethereum"
-DEFAULT_OPENETHEREUM_CONFIG_PATH = "{base}/config.toml".format(base=DEFAULT_OPENETHEREUM_DATADIR)
+DEFAULT_OPENETHEREUM_CONFIG_PATH = "/etc/openethereum/config.toml"
 DEFAULT_OPENETHEREUM_BACKUP_PATH = "/tmp/backups/wallet-backup.zip"
 DEFAULT_OPENETHEREUM_CHAIN = "kovan"
 DEFAULT_OPENETHEREUM_WARP_OFFSET = 100000
