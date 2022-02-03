@@ -76,6 +76,8 @@ WORKDIR /test
 COPY test /test
 COPY --from=build-condition /tmp/bin/openethereum /usr/local/bin/
 
+ENV NOLOAD_CONFIG=1
+
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
@@ -127,5 +129,7 @@ FROM base as tools
 
 COPY --from=build-tools /tmp/openethereum/target/release/ethkey /tmp/openethereum/target/release/ethstore /usr/local/bin/
 COPY --from=build-condition /tmp/bin/openethereum /usr/local/bin
+
+ENV NOLOAD_CONFIG=1
 
 CMD ["/bin/bash"]

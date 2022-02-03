@@ -12,7 +12,7 @@ file:
     owner: root
     group: root
     filetype: file
-  /root/.local/share/openethereum/config.toml:
+  /etc/openethereum/config.toml:
     exists: true
     mode: "0644"
     owner: root
