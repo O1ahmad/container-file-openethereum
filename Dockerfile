@@ -23,7 +23,7 @@ RUN cp -a /tmp/openethereum/target/release/. /tmp/bin
 WORKDIR /tmp/openethereum
 
 # ----- Stage: package install -----
-FROM ubuntu:21.04 as builder-package
+FROM ubuntu:26.04 as builder-package
 
 ARG openethereum_version
 
@@ -38,7 +38,7 @@ RUN chmod 755 /tmp/bin/openethereum
 FROM builder-${build_type} as build-condition
 
 # ******* Stage: base ******* #
-FROM ubuntu:21.04 as base
+FROM ubuntu:26.04 as base
 
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
